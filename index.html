@@ -5,523 +5,638 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quintara Reports</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@700;800&display=swap');
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #080808;
-    --bg2: #0F0F0F;
-    --bg3: #161616;
-    --border: #1E1E1E;
-    --text: #D8D8D0;
-    --muted: #555;
-    --accent: #C8F04D;
-    --accent2: #4DF0C8;
-    --danger: #F04D7A;
-    --warn: #F0A84D;
-    --font-mono: 'DM Mono', 'Courier New', monospace;
-    --font-display: 'Syne', sans-serif;
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-mono);
-    height: 100vh;
-    display: flex;
-    overflow: hidden;
-  }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: 220px;
-    min-width: 220px;
-    background: var(--bg2);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-  }
-
-  .sidebar-logo {
-    padding: 24px 20px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .sidebar-logo .brand {
-    font-family: var(--font-display);
-    font-size: 15px;
-    font-weight: 800;
-    color: #F0EDE4;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-  }
-
-  .sidebar-logo .tagline {
-    font-size: 9px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
-
-  .sidebar-stats {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 12px;
-  }
-
-  .stat-box {
-    flex: 1;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px 10px;
-    text-align: center;
-  }
-
-  .stat-num {
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--accent);
-  }
-
-  .stat-label {
-    font-size: 8px;
-    color: var(--muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
-
-  .nav {
-    flex: 1;
-    padding: 12px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 9px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 12px;
-    color: var(--muted);
-    border: 1px solid transparent;
-    transition: all 0.15s;
-    background: none;
-    text-align: left;
-    width: 100%;
-    font-family: var(--font-mono);
-  }
-
-  .nav-item:hover { color: var(--text); background: var(--bg3); }
-
-  .nav-item.active {
-    color: var(--accent);
-    background: rgba(200, 240, 77, 0.08);
-    border-color: rgba(200, 240, 77, 0.2);
-  }
-
-  .nav-icon { font-size: 14px; width: 18px; text-align: center; }
-
-  .sidebar-bottom {
-    padding: 12px 10px;
-    border-top: 1px solid var(--border);
-  }
-
-  /* ── MAIN CONTENT ── */
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .topbar {
-    height: 52px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 0 28px;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-
-  .page-title {
-    font-family: var(--font-display);
-    font-size: 16px;
-    font-weight: 800;
-    color: #F0EDE4;
-    letter-spacing: -0.02em;
-    flex: 1;
-  }
-
-  .content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 28px;
-  }
-
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
-
-  /* ── SCREENS ── */
-  .screen { display: none; }
-  .screen.active { display: block; }
-
-  /* ── NEW REPORT SCREEN ── */
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 14px;
-  }
-
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group.full { grid-column: 1 / -1; }
-
-  label {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  input, textarea, select {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    padding: 10px 12px;
-    transition: border-color 0.15s;
-    outline: none;
-    width: 100%;
-  }
-
-  input:focus, textarea:focus, select:focus {
-    border-color: rgba(200, 240, 77, 0.4);
-  }
-
-  textarea { resize: vertical; min-height: 80px; }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border: none;
-    transition: all 0.15s;
-    font-weight: 500;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #080808;
-  }
-
-  .btn-primary:hover { background: #d4f55a; }
-  .btn-primary:disabled { background: #2a2a2a; color: #444; cursor: not-allowed; }
-
-  .btn-ghost {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-  }
-
-  .btn-ghost:hover { color: var(--text); border-color: #333; }
-
-  .btn-danger {
-    background: transparent;
-    color: var(--danger);
-    border: 1px solid rgba(240, 77, 122, 0.3);
-  }
-
-  /* ── PIPELINE PROGRESS ── */
-  .pipeline-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(8,8,8,0.95);
-    z-index: 100;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-  }
-
-  .pipeline-overlay.visible { display: flex; }
-
-  .pipeline-card {
-    width: 100%;
-    max-width: 700px;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-
-  .pipeline-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .pipeline-title {
-    font-family: var(--font-display);
-    font-size: 16px;
-    font-weight: 800;
-    color: #F0EDE4;
-  }
-
-  .agents-track {
-    display: flex;
-    padding: 20px 24px;
-    gap: 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .agent-step {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    position: relative;
-  }
-
-  .agent-step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 14px;
-    left: 60%;
-    width: 80%;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .agent-step.done::after { background: var(--accent); }
-  .agent-step.running::after { background: var(--border); }
-
-  .agent-dot {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    transition: all 0.3s;
-    z-index: 1;
-  }
-
-  .agent-step.done .agent-dot {
-    background: rgba(200, 240, 77, 0.15);
-    border-color: var(--accent);
-  }
-
-  .agent-step.running .agent-dot {
-    background: rgba(200, 240, 77, 0.08);
-    border-color: var(--accent);
-    animation: pulse 1.5s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(200,240,77,0.3); }
-    50% { box-shadow: 0 0 0 6px rgba(200,240,77,0); }
-  }
-
-  .agent-label {
-    font-size: 9px;
-    color: var(--muted);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    text-align: center;
-  }
-
-  .agent-step.done .agent-label,
-  .agent-step.running .agent-label { color: var(--accent); }
-
-  .log-box {
-    height: 240px;
-    overflow-y: auto;
-    padding: 16px 24px;
-    font-size: 11px;
-    line-height: 1.8;
-    color: #666;
-    background: var(--bg);
-  }
-
-  .log-line { margin-bottom: 2px; }
-  .log-line.highlight { color: var(--accent); }
-  .log-line.error { color: var(--danger); }
-  .log-line.success { color: var(--accent2); }
-
-  .pipeline-footer {
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .progress-bar-wrap {
-    flex: 1;
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    margin-right: 16px;
-    overflow: hidden;
-  }
-
-  .progress-bar {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 0.5s ease;
-    width: 0%;
-  }
-
-  /* ── REPORTS LIST ── */
-  .reports-list { display: flex; flex-direction: column; gap: 8px; }
-
-  .report-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 14px 18px;
-    transition: border-color 0.15s;
-  }
-
-  .report-row:hover { border-color: #333; }
-
-  .report-icon { font-size: 20px; flex-shrink: 0; }
-
-  .report-info { flex: 1; min-width: 0; }
-
-  .report-name {
-    font-size: 12px;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .report-meta { font-size: 10px; color: var(--muted); margin-top: 3px; }
-
-  .report-actions { display: flex; gap: 8px; flex-shrink: 0; }
-
-  /* ── SETTINGS ── */
-  .settings-section {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 20px 24px;
-    margin-bottom: 16px;
-  }
-
-  .settings-title {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .key-display {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-
-  /* ── ALERTS ── */
-  .alert {
-    padding: 12px 16px;
-    border-radius: 5px;
-    font-size: 12px;
-    margin-bottom: 16px;
-    display: none;
-  }
-
-  .alert.visible { display: block; }
-  .alert-success { background: rgba(77,240,200,0.1); border: 1px solid rgba(77,240,200,0.3); color: var(--accent2); }
-  .alert-error { background: rgba(240,77,122,0.1); border: 1px solid rgba(240,77,122,0.3); color: var(--danger); }
-
-  /* ── EMPTY STATE ── */
-  .empty {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-  }
-
-  .empty-icon { font-size: 36px; margin-bottom: 12px; }
-  .empty-title { font-family: var(--font-display); font-size: 16px; color: #333; margin-bottom: 6px; }
-  .empty-sub { font-size: 11px; }
-
-  /* ── REPORT PREVIEW ── */
-  .report-preview {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 24px;
-    font-size: 12px;
-    line-height: 1.8;
-    color: #AAA;
-    white-space: pre-wrap;
-    max-height: 500px;
-    overflow-y: auto;
-    display: none;
-  }
-
-  .report-preview.visible { display: block; }
-
-  /* ── FEEDBACK PANEL ── */
-  .feedback-panel {
-    background: var(--bg2);
-    border: 1px solid rgba(200, 240, 77, 0.2);
-    border-radius: 6px;
-    padding: 20px 24px;
-    margin-top: 16px;
-    display: none;
-  }
-
-  .feedback-panel.visible { display: block; }
-
-  .tip {
-    background: var(--bg3);
-    border-left: 3px solid var(--accent);
-    padding: 12px 16px;
-    font-size: 11px;
-    color: #888;
-    line-height: 1.7;
-    border-radius: 0 4px 4px 0;
-    margin-bottom: 16px;
-  }
-
-  .tip strong { color: var(--accent); }
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@700;800&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #080808;
+  --bg2: #0F0F0F;
+  --bg3: #161616;
+  --border: #1E1E1E;
+  --text: #D8D8D0;
+  --muted: #555;
+  --accent: #C8F04D;
+  --accent2: #4DF0C8;
+  --danger: #F04D7A;
+  --warn: #F0A84D;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+  --font-display: 'Syne', sans-serif;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo .brand {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: #F0EDE4;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.sidebar-logo .tagline {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.sidebar-stats {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+}
+.stat-box {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 10px;
+  text-align: center;
+}
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.stat-label {
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.nav {
+  flex: 1;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  background: none;
+  text-align: left;
+  width: 100%;
+  font-family: var(--font-mono);
+}
+.nav-item:hover { color: var(--text); background: var(--bg3); }
+.nav-item.active {
+  color: var(--accent);
+  background: rgba(200, 240, 77, 0.08);
+  border-color: rgba(200, 240, 77, 0.2);
+}
+.nav-icon { font-size: 14px; width: 18px; text-align: center; }
+.sidebar-bottom {
+  padding: 12px 10px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── MAIN CONTENT ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.topbar {
+  height: 52px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  color: #F0EDE4;
+  letter-spacing: -0.02em;
+  flex: 1;
+}
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
+
+/* ── SCREENS ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── NEW REPORT SCREEN ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+label {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+input, textarea, select {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 10px 12px;
+  transition: border-color 0.15s;
+  outline: none;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: rgba(200, 240, 77, 0.4);
+}
+textarea { resize: vertical; min-height: 80px; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  font-weight: 500;
+}
+.btn-primary { background: var(--accent); color: #080808; }
+.btn-primary:hover { background: #d4f55a; }
+.btn-primary:disabled { background: #2a2a2a; color: #444; cursor: not-allowed; }
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { color: var(--text); border-color: #333; }
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid rgba(240, 77, 122, 0.3);
+}
+
+/* ── PIPELINE PROGRESS ── */
+.pipeline-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8,8,8,0.95);
+  z-index: 100;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+.pipeline-overlay.visible { display: flex; }
+.pipeline-card {
+  width: 100%;
+  max-width: 700px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pipeline-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pipeline-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  color: #F0EDE4;
+}
+.agents-track {
+  display: flex;
+  padding: 20px 24px;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.agent-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+.agent-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 60%;
+  width: 80%;
+  height: 1px;
+  background: var(--border);
+}
+.agent-step.done::after { background: var(--accent); }
+.agent-step.running::after { background: var(--border); }
+.agent-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.3s;
+  z-index: 1;
+}
+.agent-step.done .agent-dot {
+  background: rgba(200, 240, 77, 0.15);
+  border-color: var(--accent);
+}
+.agent-step.running .agent-dot {
+  background: rgba(200, 240, 77, 0.08);
+  border-color: var(--accent);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,240,77,0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(200,240,77,0); }
+}
+.agent-label {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.agent-step.done .agent-label,
+.agent-step.running .agent-label { color: var(--accent); }
+.log-box {
+  height: 240px;
+  overflow-y: auto;
+  padding: 16px 24px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: #666;
+  background: var(--bg);
+}
+.log-line { margin-bottom: 2px; }
+.log-line.highlight { color: var(--accent); }
+.log-line.error { color: var(--danger); }
+.log-line.success { color: var(--accent2); }
+.pipeline-footer {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.progress-bar-wrap {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-right: 16px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+/* ── REPORTS LIST ── */
+.reports-list { display: flex; flex-direction: column; gap: 8px; }
+.report-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 18px;
+  transition: border-color 0.15s;
+}
+.report-row:hover { border-color: #333; }
+.report-icon { font-size: 20px; flex-shrink: 0; }
+.report-info { flex: 1; min-width: 0; }
+.report-name {
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.report-meta { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.report-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ── SETTINGS ── */
+.settings-section {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.settings-title {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.key-display {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── ALERTS ── */
+.alert {
+  padding: 12px 16px;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-bottom: 16px;
+  display: none;
+}
+.alert.visible { display: block; }
+.alert-success { background: rgba(77,240,200,0.1); border: 1px solid rgba(77,240,200,0.3); color: var(--accent2); }
+.alert-error { background: rgba(240,77,122,0.1); border: 1px solid rgba(240,77,122,0.3); color: var(--danger); }
+
+/* ── EMPTY STATE ── */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.empty-icon { font-size: 36px; margin-bottom: 12px; }
+.empty-title { font-family: var(--font-display); font-size: 16px; color: #333; margin-bottom: 6px; }
+.empty-sub { font-size: 11px; }
+
+/* ── REPORT PREVIEW ── */
+.report-preview {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 24px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #AAA;
+  white-space: pre-wrap;
+  max-height: 500px;
+  overflow-y: auto;
+  display: none;
+}
+.report-preview.visible { display: block; }
+
+/* ── FEEDBACK PANEL ── */
+.feedback-panel {
+  background: var(--bg2);
+  border: 1px solid rgba(200, 240, 77, 0.2);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-top: 16px;
+  display: none;
+}
+.feedback-panel.visible { display: block; }
+.tip {
+  background: var(--bg3);
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px;
+  font-size: 11px;
+  color: #888;
+  line-height: 1.7;
+  border-radius: 0 4px 4px 0;
+  margin-bottom: 16px;
+}
+.tip strong { color: var(--accent); }
+
+/* ── PROFIT SCREEN ── */
+.profit-section {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.profit-section-title {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.profit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+.profit-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 14px;
+}
+.profit-card.highlight {
+  border-color: rgba(200,240,77,0.2);
+  background: rgba(200,240,77,0.04);
+}
+.profit-card-label {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.profit-card-value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+}
+.profit-card-value.green { color: var(--accent2); }
+.profit-card-value.red { color: var(--danger); }
+.profit-card-value.accent { color: var(--accent); }
+.profit-card-sub {
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.goal-bar-wrap {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.goal-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+  width: 0%;
+}
+.goal-bar.cyan { background: var(--accent2); }
+.goal-bar.gold { background: linear-gradient(90deg, #b8860b, #ffd700, #c9a84c); }
+
+/* Mercedes section */
+.mercedes-section {
+  border-color: rgba(201,168,76,0.25);
+  background: linear-gradient(135deg, #0f0f0f 0%, #111008 100%);
+}
+.mercedes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.car-visual {
+  width: 100%;
+  background: linear-gradient(135deg, #0a0a0a, #141410);
+  border: 1px solid #1a1a12;
+  border-radius: 8px;
+  padding: 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.car-emoji {
+  font-size: 72px;
+  filter: drop-shadow(0 0 24px rgba(201,168,76,0.35));
+}
+.car-shine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 60% 40%, rgba(201,168,76,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.merc-stat {
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 5px;
+  padding: 12px;
+  text-align: center;
+}
+.merc-stat-val {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: #c9a84c;
+}
+.merc-stat-label {
+  font-size: 9px;
+  color: #555;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.merc-pct-label {
+  font-size: 10px;
+  color: #555;
+  margin-top: 8px;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── CSV IMPORT ── */
+.csv-drop-zone {
+  border: 1px dashed #2a2a2a;
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--bg3);
+  margin-bottom: 10px;
+  position: relative;
+}
+.csv-drop-zone:hover, .csv-drop-zone.dragover {
+  border-color: rgba(200,240,77,0.4);
+  background: rgba(200,240,77,0.04);
+}
+.csv-drop-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.csv-drop-icon { font-size: 24px; margin-bottom: 6px; }
+.csv-drop-text { font-size: 11px; color: var(--muted); }
+.csv-drop-text strong { color: var(--accent); }
+.csv-row-picker {
+  display: none;
+  background: var(--bg3);
+  border: 1px solid rgba(200,240,77,0.2);
+  border-radius: 6px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.csv-row-picker.visible { display: block; }
+.csv-row-picker label { color: var(--accent); margin-bottom: 8px; display: block; }
+.csv-row-picker select { width: 100%; }
+.csv-loaded-badge {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: rgba(77,240,200,0.08);
+  border: 1px solid rgba(77,240,200,0.2);
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--accent2);
+  margin-bottom: 10px;
+}
+.csv-loaded-badge.visible { display: flex; }
 </style>
 </head>
 <body>
@@ -532,7 +647,6 @@
     <div class="brand">Quintara<br>Reports</div>
     <div class="tagline">Competitor Analysis</div>
   </div>
-
   <div class="sidebar-stats">
     <div class="stat-box">
       <div class="stat-num" id="stat-jobs">0</div>
@@ -543,7 +657,6 @@
       <div class="stat-label">Revenue</div>
     </div>
   </div>
-
   <nav class="nav">
     <button class="nav-item active" data-screen="new-report">
       <span class="nav-icon">✦</span> New Report
@@ -554,11 +667,13 @@
     <button class="nav-item" data-screen="feedback">
       <span class="nav-icon">🧠</span> Client Feedback
     </button>
+    <button class="nav-item" data-screen="profit">
+      <span class="nav-icon">💰</span> Profit
+    </button>
     <button class="nav-item" data-screen="settings">
       <span class="nav-icon">⚙</span> Settings
     </button>
   </nav>
-
   <div class="sidebar-bottom">
     <button class="btn btn-ghost" style="width:100%; justify-content:center;" onclick="window.api.openFolder()">
       📂 Open Outputs Folder
@@ -571,7 +686,6 @@
   <div class="topbar">
     <div class="page-title" id="page-title">New Report</div>
   </div>
-
   <div class="content">
 
     <!-- ── NEW REPORT SCREEN ── -->
@@ -579,9 +693,7 @@
       <div class="tip">
         <strong>How to use:</strong> Copy the client details from your Gmail (Tally submission) and paste them into the big box at the bottom — or fill in the fields manually. Then click <strong>Generate Report</strong>.
       </div>
-
       <div id="alert-run" class="alert"></div>
-
       <div class="form-grid">
         <div class="form-group">
           <label>Client Full Name *</label>
@@ -624,14 +736,33 @@
           <input type="email" id="f-email" placeholder="client@company.com">
         </div>
       </div>
-
-      <div class="form-group" style="margin-bottom: 16px;">
-        <label>— OR — Paste raw Tally email here (the whole thing)</label>
-        <textarea id="f-raw" style="min-height:100px; font-size:11px; color:#666;" placeholder="Paste the full Tally notification email here. The app will read it automatically and fill in the fields above..."></textarea>
+      <!-- CSV IMPORT -->
+      <div style="margin-bottom:6px;">
+        <label>— OR — Import from Tally CSV export</label>
+      </div>
+      <div class="csv-loaded-badge" id="csv-loaded-badge">
+        <span>✅</span>
+        <span id="csv-loaded-text">CSV loaded</span>
+        <button class="btn btn-ghost" style="padding:3px 10px; font-size:10px; margin-left:auto;" onclick="clearCsv()">✕ Clear</button>
+      </div>
+      <div class="csv-drop-zone" id="csv-drop-zone">
+        <input type="file" id="csv-file-input" accept=".csv" onchange="handleCsvFile(this.files[0])">
+        <div class="csv-drop-icon">📊</div>
+        <div class="csv-drop-text">Drop your Tally CSV here or <strong>click to browse</strong></div>
+        <div class="csv-drop-text" style="margin-top:4px; font-size:10px;">Export from Tally → Responses → Export CSV</div>
+      </div>
+      <div class="csv-row-picker" id="csv-row-picker">
+        <label>Multiple submissions found — pick which one to load:</label>
+        <select id="csv-row-select" onchange="applyCsvRow(parseInt(this.value))"></select>
       </div>
 
+      <!-- EMAIL FALLBACK -->
+      <div class="form-group" style="margin-bottom: 16px; margin-top: 8px;">
+        <label>— OR — Paste raw Tally email here</label>
+        <textarea id="f-raw" style="min-height:80px; font-size:11px; color:#666;" placeholder="Paste the full Tally notification email here..."></textarea>
+      </div>
       <div style="display:flex; gap:10px; align-items:center;">
-        <button class="btn btn-primary" id="btn-parse" onclick="parseRaw()">⟳ Read from Email</button>
+        <button class="btn btn-ghost" id="btn-parse" onclick="parseRaw()">⟳ Email</button>
         <button class="btn btn-primary" id="btn-run" onclick="runPipeline()" style="background: var(--accent); flex:1; justify-content:center; font-size:13px; padding: 13px 20px;">
           ▶ Generate Report
         </button>
@@ -656,9 +787,7 @@
       <div class="tip">
         <strong>Memory system:</strong> After you deliver a report and the client replies with feedback, paste it here. The pipeline learns from it and applies the lessons to future reports in the same industry — automatically.
       </div>
-
       <div id="alert-feedback" class="alert"></div>
-
       <div class="settings-section">
         <div class="settings-title">Log Client Feedback</div>
         <div class="form-grid">
@@ -679,10 +808,126 @@
       </div>
     </div>
 
+    <!-- ── PROFIT SCREEN ── -->
+    <div class="screen" id="screen-profit">
+
+      <!-- THIS MONTH -->
+      <div class="profit-section">
+        <div class="profit-section-title">This Month</div>
+        <div class="profit-grid">
+          <div class="profit-card">
+            <div class="profit-card-label">Revenue</div>
+            <div class="profit-card-value green" id="p-revenue-display">€0</div>
+            <div class="profit-card-sub">Auto from reports · override below</div>
+            <input type="number" id="p-revenue-override" placeholder="Override €" oninput="recalcProfit()" style="margin-top:10px;">
+          </div>
+          <div class="profit-card">
+            <div class="profit-card-label">API Credits Used</div>
+            <div class="profit-card-value red" id="p-expenses-display">€0</div>
+            <div class="profit-card-sub">Enter what you spent on API</div>
+            <input type="number" id="p-expenses" placeholder="e.g. 4.20" oninput="recalcProfit(); saveProfit();">
+          </div>
+          <div class="profit-card highlight">
+            <div class="profit-card-label">Net Profit</div>
+            <div class="profit-card-value accent" id="p-profit-display">€0</div>
+            <div class="profit-card-sub">Revenue minus expenses</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MONTHLY GOAL -->
+      <div class="profit-section">
+        <div class="profit-section-title">Monthly Goal</div>
+        <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+          <div style="flex:1;">
+            <label>Target (€)</label>
+            <input type="number" id="p-monthly-goal" placeholder="e.g. 5000" oninput="recalcProfit(); saveProfit();" style="margin-top:6px;">
+          </div>
+          <div style="text-align:right; min-width:80px;">
+            <div style="font-size:22px; font-family:var(--font-display); font-weight:800; color:var(--accent)" id="p-monthly-pct">0%</div>
+            <div style="font-size:10px; color:var(--muted);">of goal</div>
+          </div>
+        </div>
+        <div class="goal-bar-wrap">
+          <div class="goal-bar" id="bar-monthly"></div>
+        </div>
+        <div style="font-size:11px; color:var(--muted); margin-top:8px;" id="p-monthly-needed"></div>
+      </div>
+
+      <!-- YEARLY GOAL -->
+      <div class="profit-section">
+        <div class="profit-section-title">Yearly Goal</div>
+        <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+          <div style="flex:1;">
+            <label>Yearly Target (€)</label>
+            <input type="number" id="p-yearly-goal" placeholder="e.g. 50000" oninput="recalcProfit(); saveProfit();" style="margin-top:6px;">
+          </div>
+          <div style="text-align:right; min-width:80px;">
+            <div style="font-size:22px; font-family:var(--font-display); font-weight:800; color:var(--accent2)" id="p-yearly-pct">0%</div>
+            <div style="font-size:10px; color:var(--muted);">of goal</div>
+          </div>
+        </div>
+        <div class="goal-bar-wrap">
+          <div class="goal-bar cyan" id="bar-yearly"></div>
+        </div>
+        <div style="font-size:11px; color:var(--muted); margin-top:8px;" id="p-yearly-needed"></div>
+        <div style="margin-top:14px;">
+          <label>Total Earned This Year (€) — enter manually each month</label>
+          <input type="number" id="p-yearly-earned" placeholder="e.g. 12400" oninput="recalcProfit(); saveProfit();" style="margin-top:6px;">
+        </div>
+      </div>
+
+      <!-- DREAM GOAL: MERCEDES -->
+      <div class="profit-section mercedes-section">
+        <div class="mercedes-header">
+          <div>
+            <div class="profit-section-title" style="color:#c9a84c; border-bottom-color:rgba(201,168,76,0.15);">The Goal</div>
+            <div style="font-family:var(--font-display); font-size:20px; font-weight:800; color:#f0ede4; margin-top:4px;">Mercedes-Benz S 500 L AMG</div>
+            <div style="font-size:11px; color:#666; margin-top:4px;">VIP First Class · 1 owner · Full spec · White</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:28px; font-family:var(--font-display); font-weight:800; color:#c9a84c;">€47,900</div>
+            <div style="font-size:10px; color:#444; margin-top:2px;">autoscout24.de</div>
+          </div>
+        </div>
+
+        <div class="car-visual">
+          <div class="car-shine"></div>
+          <div class="car-emoji">🚗</div>
+          <div style="font-size:11px; color:#3a3a2a; margin-top:10px; letter-spacing:0.1em; text-transform:uppercase;">S 500 L · AMG Line · Chauffeur Package · White</div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin:16px 0;">
+          <div class="merc-stat">
+            <div class="merc-stat-val" id="m-saved">€0</div>
+            <div class="merc-stat-label">Saved Toward It</div>
+          </div>
+          <div class="merc-stat">
+            <div class="merc-stat-val" id="m-remaining">€47,900</div>
+            <div class="merc-stat-label">Still Needed</div>
+          </div>
+          <div class="merc-stat">
+            <div class="merc-stat-val" id="m-reports">192</div>
+            <div class="merc-stat-label">Reports to Go</div>
+          </div>
+        </div>
+
+        <div class="goal-bar-wrap" style="height:6px;">
+          <div class="goal-bar gold" id="bar-merc"></div>
+        </div>
+        <div class="merc-pct-label" id="m-pct-label">0% of the way there — every report gets you closer.</div>
+
+        <div style="margin-top:16px;">
+          <label>Total Saved Toward This Car (€) — update whenever you set money aside</label>
+          <input type="number" id="p-merc-saved" placeholder="e.g. 3200" oninput="recalcProfit(); saveProfit();" style="margin-top:6px;">
+        </div>
+      </div>
+
+    </div>
+
     <!-- ── SETTINGS SCREEN ── -->
     <div class="screen" id="screen-settings">
       <div id="alert-settings" class="alert"></div>
-
       <div class="settings-section">
         <div class="settings-title">Anthropic API Key</div>
         <div class="tip" style="margin-bottom:14px;">
@@ -694,7 +939,6 @@
           <button class="btn btn-primary" onclick="saveApiKey()">Save Key</button>
         </div>
       </div>
-
       <div class="settings-section">
         <div class="settings-title">About Quintara Reports</div>
         <div style="font-size:12px; color: var(--muted); line-height:1.8;">
@@ -716,7 +960,6 @@
       <div class="pipeline-title">Generating Report...</div>
       <div id="pipeline-status" style="font-size:11px; color: var(--muted);">Starting</div>
     </div>
-
     <div class="agents-track">
       <div class="agent-step" id="step-intake">
         <div class="agent-dot">📋</div>
@@ -739,9 +982,7 @@
         <div class="agent-label">QA</div>
       </div>
     </div>
-
     <div class="log-box" id="log-box"></div>
-
     <div class="pipeline-footer">
       <div class="progress-bar-wrap">
         <div class="progress-bar" id="progress-bar"></div>
@@ -752,13 +993,13 @@
 </div>
 
 <script>
-// ── NAVIGATION ───────────────────────────────────────────────────────────────
-
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
 const titles = {
   "new-report": "New Report",
-  "reports": "Past Reports",
-  "feedback": "Client Feedback",
-  "settings": "Settings",
+  "reports":    "Past Reports",
+  "feedback":   "Client Feedback",
+  "profit":     "Profit Overview",
+  "settings":   "Settings",
 };
 
 document.querySelectorAll(".nav-item").forEach(btn => {
@@ -770,11 +1011,11 @@ document.querySelectorAll(".nav-item").forEach(btn => {
     document.getElementById("screen-" + screen).classList.add("active");
     document.getElementById("page-title").textContent = titles[screen];
     if (screen === "reports") loadReports();
+    if (screen === "profit") loadProfit();
   });
 });
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
-
+// ── INIT ──────────────────────────────────────────────────────────────────────
 async function init() {
   const stats = await window.api.getStats();
   document.getElementById("stat-jobs").textContent = stats.jobCount;
@@ -782,15 +1023,12 @@ async function init() {
   const key = await window.api.loadApiKey();
   if (key) document.getElementById("api-key-input").value = key;
 }
-
 init();
 
 // ── PARSE RAW EMAIL ───────────────────────────────────────────────────────────
-
 function parseRaw() {
   const raw = document.getElementById("f-raw").value.trim();
   if (!raw) return;
-
   const get = (patterns) => {
     for (const p of patterns) {
       const m = raw.match(p);
@@ -798,46 +1036,41 @@ function parseRaw() {
     }
     return "";
   };
-
-  document.getElementById("f-name").value = get([/Your full name[\s\S]*?\n([^\n]+)/, /full name[:\s]+([^\n]+)/i, /name[:\s]+([^\n]+)/i]);
-  document.getElementById("f-company").value = get([/Your company name[\s\S]*?\n([^\n]+)/, /company name[:\s]+([^\n]+)/i, /company[:\s]+([^\n]+)/i]);
+  document.getElementById("f-name").value     = get([/Your full name[\s\S]*?\n([^\n]+)/, /full name[:\s]+([^\n]+)/i, /name[:\s]+([^\n]+)/i]);
+  document.getElementById("f-company").value  = get([/Your company name[\s\S]*?\n([^\n]+)/, /company name[:\s]+([^\n]+)/i, /company[:\s]+([^\n]+)/i]);
   document.getElementById("f-industry").value = get([/Your industry[\s\S]*?\n([^\n]+)/, /industry[:\s]+([^\n]+)/i]);
-  document.getElementById("f-product").value = get([/What does your company do[\s\S]*?\n([^\n]+)/, /does[:\s]+([^\n]+)/i]);
-  document.getElementById("f-c1").value = get([/Competitor 1[\s\S]*?\n([^\n]+)/, /competitor 1[:\s]+([^\n]+)/i]);
-  document.getElementById("f-c2").value = get([/Competitor 2[\s\S]*?\n([^\n]+)/, /competitor 2[:\s]+([^\n]+)/i]);
-  document.getElementById("f-c3").value = get([/Competitor 3[\s\S]*?\n([^\n]+)/, /competitor 3[:\s]+([^\n]+)/i]);
-  document.getElementById("f-market").value = get([/countries or regions[\s\S]*?\n([^\n]+)/, /market[:\s]+([^\n]+)/i, /region[:\s]+([^\n]+)/i]);
+  document.getElementById("f-product").value  = get([/What does your company do[\s\S]*?\n([^\n]+)/, /does[:\s]+([^\n]+)/i]);
+  document.getElementById("f-c1").value       = get([/Competitor 1[\s\S]*?\n([^\n]+)/, /competitor 1[:\s]+([^\n]+)/i]);
+  document.getElementById("f-c2").value       = get([/Competitor 2[\s\S]*?\n([^\n]+)/, /competitor 2[:\s]+([^\n]+)/i]);
+  document.getElementById("f-c3").value       = get([/Competitor 3[\s\S]*?\n([^\n]+)/, /competitor 3[:\s]+([^\n]+)/i]);
+  document.getElementById("f-market").value   = get([/countries or regions[\s\S]*?\n([^\n]+)/, /market[:\s]+([^\n]+)/i, /region[:\s]+([^\n]+)/i]);
   document.getElementById("f-decision").value = get([/decision are you trying[\s\S]*?\n([^\n]+(?:\n(?!\n)[^\n]+)*)/, /decision[:\s]+([^\n]+)/i]);
-  document.getElementById("f-email").value = get([/email address[\s\S]*?\n([^\n@]+@[^\n]+)/, /email[:\s]+([^\n@]+@[^\n]+)/i]);
+  document.getElementById("f-email").value    = get([/email address[\s\S]*?\n([^\n@]+@[^\n]+)/, /email[:\s]+([^\n@]+@[^\n]+)/i]);
 }
 
 // ── CLEAR FORM ────────────────────────────────────────────────────────────────
-
 function clearForm() {
   ["f-name","f-company","f-industry","f-product","f-c1","f-c2","f-c3","f-market","f-decision","f-email","f-raw"]
     .forEach(id => document.getElementById(id).value = "");
 }
 
 // ── RUN PIPELINE ──────────────────────────────────────────────────────────────
-
 let pipelineRunning = false;
 
 async function runPipeline() {
   if (pipelineRunning) return;
-
-  const name = document.getElementById("f-name").value.trim();
-  const company = document.getElementById("f-company").value.trim();
+  const name     = document.getElementById("f-name").value.trim();
+  const company  = document.getElementById("f-company").value.trim();
   const industry = document.getElementById("f-industry").value.trim();
-  const c1 = document.getElementById("f-c1").value.trim();
-  const c2 = document.getElementById("f-c2").value.trim();
-  const market = document.getElementById("f-market").value.trim();
+  const c1       = document.getElementById("f-c1").value.trim();
+  const c2       = document.getElementById("f-c2").value.trim();
+  const market   = document.getElementById("f-market").value.trim();
 
   if (!company || !industry || !c1 || !c2 || !market) {
     showAlert("alert-run", "error", "Please fill in: Company Name, Industry, at least 2 Competitors, and Market.");
     return;
   }
 
-  // Build client details string for pipeline
   const details = [
     `Client name: ${name || "Not provided"}`,
     `Company: ${company}`,
@@ -851,11 +1084,9 @@ async function runPipeline() {
     `Email: ${document.getElementById("f-email").value || "Not provided"}`,
   ].filter(Boolean).join("\n");
 
-  // Show overlay
   showPipelineOverlay();
   pipelineRunning = true;
 
-  // Listen for logs
   window.api.removePipelineLog();
   window.api.onPipelineLog((msg) => {
     appendLog(msg);
@@ -872,7 +1103,6 @@ async function runPipeline() {
     document.getElementById("pipeline-status").textContent = "Done ✓";
     document.getElementById("pipeline-eta").textContent = "Complete";
     markAllDone();
-    // Refresh stats
     setTimeout(async () => {
       const stats = await window.api.getStats();
       document.getElementById("stat-jobs").textContent = stats.jobCount;
@@ -888,7 +1118,6 @@ async function runPipeline() {
 }
 
 // ── PIPELINE OVERLAY ──────────────────────────────────────────────────────────
-
 function showPipelineOverlay() {
   document.getElementById("pipeline-overlay").classList.add("visible");
   document.getElementById("log-box").innerHTML = "";
@@ -896,8 +1125,7 @@ function showPipelineOverlay() {
   document.getElementById("pipeline-status").textContent = "Starting...";
   document.getElementById("pipeline-eta").textContent = "~20 min";
   ["intake","research","analyst","writer","qa"].forEach(s => {
-    const el = document.getElementById("step-" + s);
-    el.classList.remove("done","running");
+    document.getElementById("step-" + s).classList.remove("done","running");
   });
   appendLog("Starting Quintara pipeline...\n");
 }
@@ -916,19 +1144,18 @@ function appendLog(msg, type = "") {
 }
 
 const agentMap = {
-  "INTAKE AGENT": "intake",
+  "INTAKE AGENT":   "intake",
   "RESEARCH AGENT": "research",
-  "ANALYST AGENT": "analyst",
-  "WRITER AGENT": "writer",
-  "QA AGENT": "qa",
+  "ANALYST AGENT":  "analyst",
+  "WRITER AGENT":   "writer",
+  "QA AGENT":       "qa",
 };
-
 const progressMap = {
-  "INTAKE AGENT": 10,
+  "INTAKE AGENT":   10,
   "RESEARCH AGENT": 30,
-  "ANALYST AGENT": 55,
-  "WRITER AGENT": 80,
-  "QA AGENT": 95,
+  "ANALYST AGENT":  55,
+  "WRITER AGENT":   80,
+  "QA AGENT":       95,
 };
 
 let currentAgent = null;
@@ -941,12 +1168,10 @@ function updateAgentSteps(msg) {
         document.getElementById("step-" + currentAgent).classList.add("done");
       }
       document.getElementById("step-" + id).classList.add("running");
-      document.getElementById("pipeline-status").textContent = key.replace(" AGENT", "").charAt(0) + key.replace(" AGENT", "").slice(1).toLowerCase() + "...";
+      document.getElementById("pipeline-status").textContent =
+        key.replace(" AGENT","").charAt(0) + key.replace(" AGENT","").slice(1).toLowerCase() + "...";
       currentAgent = id;
     }
-  }
-  if (msg.includes("✅") && currentAgent) {
-    // Mark current as done on next step trigger
   }
 }
 
@@ -969,7 +1194,6 @@ function markAllDone() {
 }
 
 // ── REPORTS LIST ──────────────────────────────────────────────────────────────
-
 async function loadReports() {
   const reports = await window.api.getReports();
   const container = document.getElementById("reports-list");
@@ -998,46 +1222,45 @@ async function loadReports() {
 async function previewReport(filename) {
   const content = await window.api.readReport(filename);
   const preview = document.getElementById("report-preview");
-  // Strip HTML comments (QA header)
-  const clean = content.replace(/<!--[\s\S]*?-->/g, "").trim();
-  preview.textContent = clean;
+  preview.textContent = content;
   preview.classList.add("visible");
-  preview.scrollIntoView({ behavior: "smooth" });
+  preview.scrollTop = 0;
 }
 
-// ── FEEDBACK ─────────────────────────────────────────────────────────────────
-
+// ── FEEDBACK ──────────────────────────────────────────────────────────────────
 async function saveFeedback() {
   const industry = document.getElementById("fb-industry").value.trim();
-  const feedback = document.getElementById("fb-text").value.trim();
-  if (!industry || !feedback) {
-    showAlert("alert-feedback", "error", "Please fill in both Industry and Feedback fields.");
+  const client   = document.getElementById("fb-client").value.trim();
+  const text     = document.getElementById("fb-text").value.trim();
+
+  if (!industry || !text) {
+    showAlert("alert-feedback", "error", "Please fill in Industry and the feedback text.");
     return;
   }
-  const result = await window.api.saveFeedback({ industry, feedback });
+
+  const result = await window.api.saveFeedback({ industry, client, text });
   if (result.ok) {
-    showAlert("alert-feedback", "success", "Feedback saved to memory. The pipeline will apply it to future " + industry + " reports.");
-    document.getElementById("fb-text").value = "";
+    showAlert("alert-feedback", "success", "Feedback saved. The pipeline will apply it to future reports in this industry.");
     document.getElementById("fb-industry").value = "";
-    document.getElementById("fb-client").value = "";
+    document.getElementById("fb-client").value   = "";
+    document.getElementById("fb-text").value     = "";
   } else {
-    showAlert("alert-feedback", "error", "Failed to save: " + result.error);
+    showAlert("alert-feedback", "error", "Failed to save feedback: " + result.error);
   }
 }
 
-// ── SETTINGS ─────────────────────────────────────────────────────────────────
-
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
 async function saveApiKey() {
   const key = document.getElementById("api-key-input").value.trim();
-  if (!key.startsWith("sk-ant-")) {
-    showAlert("alert-settings", "error", "That doesn't look right. The key should start with sk-ant-");
+  if (!key || !key.startsWith("sk-ant-")) {
+    showAlert("alert-settings", "error", "Invalid key. It should start with sk-ant-");
     return;
   }
   const result = await window.api.saveApiKey(key);
   if (result.ok) {
-    showAlert("alert-settings", "success", "API key saved. You're ready to generate reports.");
+    showAlert("alert-settings", "success", "API key saved successfully.");
   } else {
-    showAlert("alert-settings", "error", "Failed to save key: " + result.error);
+    showAlert("alert-settings", "error", "Failed to save key.");
   }
 }
 
@@ -1046,13 +1269,242 @@ function toggleKeyVisibility() {
   input.type = input.type === "password" ? "text" : "password";
 }
 
-// ── UTILS ─────────────────────────────────────────────────────────────────────
+// ── PROFIT SCREEN ──────────────────────────────────────────────────────────────
+function loadProfit() {
+  const d = JSON.parse(localStorage.getItem("quintara-profit") || "{}");
+  if (d.expenses)         document.getElementById("p-expenses").value         = d.expenses;
+  if (d.revenueOverride)  document.getElementById("p-revenue-override").value  = d.revenueOverride;
+  if (d.monthlyGoal)      document.getElementById("p-monthly-goal").value      = d.monthlyGoal;
+  if (d.yearlyGoal)       document.getElementById("p-yearly-goal").value       = d.yearlyGoal;
+  if (d.yearlyEarned)     document.getElementById("p-yearly-earned").value     = d.yearlyEarned;
+  if (d.mercSaved)        document.getElementById("p-merc-saved").value        = d.mercSaved;
+  recalcProfit();
+}
 
+function saveProfit() {
+  localStorage.setItem("quintara-profit", JSON.stringify({
+    expenses:        document.getElementById("p-expenses").value,
+    revenueOverride: document.getElementById("p-revenue-override").value,
+    monthlyGoal:     document.getElementById("p-monthly-goal").value,
+    yearlyGoal:      document.getElementById("p-yearly-goal").value,
+    yearlyEarned:    document.getElementById("p-yearly-earned").value,
+    mercSaved:       document.getElementById("p-merc-saved").value,
+  }));
+}
+
+function recalcProfit() {
+  const jobCount    = parseInt(document.getElementById("stat-jobs").textContent) || 0;
+  const autoRevenue = jobCount * 249;
+  const override    = parseFloat(document.getElementById("p-revenue-override").value) || 0;
+  const revenue     = override > 0 ? override : autoRevenue;
+  const expenses    = parseFloat(document.getElementById("p-expenses").value) || 0;
+  const profit      = revenue - expenses;
+
+  const fmt = n => "€" + Math.abs(n).toLocaleString("de-AT", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  document.getElementById("p-revenue-display").textContent  = fmt(revenue);
+  document.getElementById("p-expenses-display").textContent = fmt(expenses);
+  document.getElementById("p-profit-display").textContent   = (profit < 0 ? "-" : "") + fmt(profit);
+
+  // Monthly goal
+  const monthlyGoal = parseFloat(document.getElementById("p-monthly-goal").value) || 0;
+  if (monthlyGoal > 0) {
+    const pct = Math.min(100, (profit / monthlyGoal) * 100);
+    document.getElementById("bar-monthly").style.width = Math.max(0, pct) + "%";
+    document.getElementById("p-monthly-pct").textContent = Math.round(Math.max(0, pct)) + "%";
+    const needed = Math.max(0, monthlyGoal - profit);
+    const reportsNeeded = Math.ceil(needed / 249);
+    document.getElementById("p-monthly-needed").textContent = needed > 0
+      ? `€${needed.toFixed(0)} to go — ${reportsNeeded} more report${reportsNeeded !== 1 ? "s" : ""} at €249`
+      : "✅ Monthly goal smashed!";
+  }
+
+  // Yearly goal
+  const yearlyGoal   = parseFloat(document.getElementById("p-yearly-goal").value) || 0;
+  const yearlyEarned = parseFloat(document.getElementById("p-yearly-earned").value) || 0;
+  if (yearlyGoal > 0) {
+    const pct = Math.min(100, (yearlyEarned / yearlyGoal) * 100);
+    document.getElementById("bar-yearly").style.width = Math.max(0, pct) + "%";
+    document.getElementById("p-yearly-pct").textContent = Math.round(Math.max(0, pct)) + "%";
+    const needed = Math.max(0, yearlyGoal - yearlyEarned);
+    document.getElementById("p-yearly-needed").textContent = needed > 0
+      ? `€${needed.toLocaleString()} remaining this year`
+      : "✅ Yearly goal smashed!";
+  }
+
+  // Mercedes goal
+  const MERC = 47900;
+  const mercSaved     = parseFloat(document.getElementById("p-merc-saved").value) || 0;
+  const mercRemaining = Math.max(0, MERC - mercSaved);
+  const mercPct       = Math.min(100, (mercSaved / MERC) * 100);
+  const reportsToMerc = Math.ceil(mercRemaining / 249);
+
+  document.getElementById("m-saved").textContent     = "€" + mercSaved.toLocaleString();
+  document.getElementById("m-remaining").textContent = "€" + mercRemaining.toLocaleString();
+  document.getElementById("m-reports").textContent   = reportsToMerc > 0 ? reportsToMerc.toLocaleString() : "0";
+  document.getElementById("bar-merc").style.width    = mercPct + "%";
+
+  const label = mercPct >= 100  ? "🏁 You made it. Go buy the car." :
+                mercPct >= 75   ? `${mercPct.toFixed(1)}% — almost in the seat. ${reportsToMerc} reports to go.` :
+                mercPct >= 50   ? `${mercPct.toFixed(1)}% — halfway to the keys. Keep pushing.` :
+                mercPct >= 25   ? `${mercPct.toFixed(1)}% — you can smell the leather. ${reportsToMerc} reports to go.` :
+                mercPct > 0     ? `${mercPct.toFixed(1)}% — ${reportsToMerc} reports stand between you and that car.` :
+                                  `${reportsToMerc} reports to go. Start the engine.`;
+  document.getElementById("m-pct-label").textContent = label;
+}
+
+// ── CSV IMPORT ────────────────────────────────────────────────────────────────
+
+let csvRows = [];    // all data rows parsed from CSV
+let csvHeaders = []; // header row
+
+// Drag-over visual feedback
+const dropZone = document.getElementById("csv-drop-zone");
+dropZone.addEventListener("dragover",  e => { e.preventDefault(); dropZone.classList.add("dragover"); });
+dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+dropZone.addEventListener("drop", e => {
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith(".csv")) handleCsvFile(file);
+});
+
+function handleCsvFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    parseCsv(text);
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+// Robust CSV parser — handles quoted fields, commas inside quotes, newlines
+function parseCsvLine(line) {
+  const result = [];
+  let cur = "", inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
+      else inQuotes = !inQuotes;
+    } else if (ch === ',' && !inQuotes) {
+      result.push(cur.trim()); cur = "";
+    } else {
+      cur += ch;
+    }
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function parseCsv(text) {
+  // Split into lines, respecting quoted newlines
+  const lines = [];
+  let cur = "", inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      if (inQuotes && text[i+1] === '"') { cur += '"'; i++; }
+      else inQuotes = !inQuotes;
+      cur += ch;
+    } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+      if (cur.trim()) lines.push(cur);
+      cur = "";
+      if (ch === '\r' && text[i+1] === '\n') i++;
+    } else {
+      cur += ch;
+    }
+  }
+  if (cur.trim()) lines.push(cur);
+
+  if (lines.length < 2) {
+    showAlert("alert-run", "error", "CSV has no data rows. Export from Tally and try again.");
+    return;
+  }
+
+  csvHeaders = parseCsvLine(lines[0]);
+  csvRows = lines.slice(1).map(l => parseCsvLine(l));
+
+  if (csvRows.length === 1) {
+    // Only one submission — apply immediately
+    applyCsvRow(0);
+  } else {
+    // Multiple — show picker
+    const picker = document.getElementById("csv-row-picker");
+    const sel    = document.getElementById("csv-row-select");
+    sel.innerHTML = csvRows.map((row, i) => {
+      // Try to find a name column for the label
+      const nameCol = csvHeaders.findIndex(h => /name/i.test(h) && !/company/i.test(h));
+      const compCol = csvHeaders.findIndex(h => /company/i.test(h));
+      const label = [
+        nameCol >= 0 ? row[nameCol] : "",
+        compCol >= 0 ? row[compCol] : "",
+      ].filter(Boolean).join(" — ") || `Row ${i + 1}`;
+      return `<option value="${i}">${i+1}. ${label}</option>`;
+    }).join("");
+    picker.classList.add("visible");
+    applyCsvRow(0);
+  }
+}
+
+// Maps CSV column header to a form field — fuzzy matching so it works
+// regardless of exact Tally question wording
+function matchHeader(header) {
+  const h = header.toLowerCase();
+  if (/full.?name|your.?name|first.?name|client.?name/.test(h) && !/company/.test(h)) return "f-name";
+  if (/company.?name|company|firm|business.?name|organisation/.test(h))               return "f-company";
+  if (/industry|sector|niche|field/.test(h))                                           return "f-industry";
+  if (/what.?do.*(you|company|they)|describe|product|service|about/.test(h))          return "f-product";
+  if (/competitor.?1|first.?competitor/.test(h))                                       return "f-c1";
+  if (/competitor.?2|second.?competitor/.test(h))                                      return "f-c2";
+  if (/competitor.?3|third.?competitor/.test(h))                                       return "f-c3";
+  if (/market|region|country|geography|location|area|where/.test(h))                  return "f-market";
+  if (/decision|goal|objective|challenge|why|purpose|trying|outcome/.test(h))         return "f-decision";
+  if (/email|e-mail/.test(h))                                                          return "f-email";
+  return null;
+}
+
+function applyCsvRow(rowIndex) {
+  const row = csvRows[rowIndex];
+  if (!row) return;
+
+  // Clear form first
+  ["f-name","f-company","f-industry","f-product","f-c1","f-c2","f-c3","f-market","f-decision","f-email"]
+    .forEach(id => document.getElementById(id).value = "");
+
+  // Map each column
+  csvHeaders.forEach((header, i) => {
+    const fieldId = matchHeader(header);
+    if (fieldId && row[i]) {
+      const el = document.getElementById(fieldId);
+      if (el && !el.value) el.value = row[i];
+    }
+  });
+
+  // Show loaded badge
+  const nameEl = document.getElementById("f-name");
+  const compEl = document.getElementById("f-company");
+  const label  = [nameEl.value, compEl.value].filter(Boolean).join(" · ") || "submission loaded";
+  document.getElementById("csv-loaded-text").textContent = `CSV loaded: ${label}`;
+  document.getElementById("csv-loaded-badge").classList.add("visible");
+  document.getElementById("csv-drop-zone").style.display = "none";
+}
+
+function clearCsv() {
+  csvRows = []; csvHeaders = [];
+  document.getElementById("csv-loaded-badge").classList.remove("visible");
+  document.getElementById("csv-row-picker").classList.remove("visible");
+  document.getElementById("csv-drop-zone").style.display = "";
+  document.getElementById("csv-file-input").value = "";
+}
+
+// ── ALERT HELPER ──────────────────────────────────────────────────────────────
 function showAlert(id, type, msg) {
   const el = document.getElementById(id);
-  el.className = "alert alert-" + type + " visible";
   el.textContent = msg;
-  setTimeout(() => el.classList.remove("visible"), 6000);
+  el.className = "alert alert-" + type + " visible";
+  setTimeout(() => el.classList.remove("visible"), 5000);
 }
 </script>
 </body>
