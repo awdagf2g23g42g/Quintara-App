@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quintara Reports</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@700;800&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080808;
+    --bg2: #0F0F0F;
+    --bg3: #161616;
+    --border: #1E1E1E;
+    --text: #D8D8D0;
+    --muted: #555;
+    --accent: #C8F04D;
+    --accent2: #4DF0C8;
+    --danger: #F04D7A;
+    --warn: #F0A84D;
+    --font-mono: 'DM Mono', 'Courier New', monospace;
+    --font-display: 'Syne', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo .brand {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 800;
+    color: #F0EDE4;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .sidebar-logo .tagline {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .sidebar-stats {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+  }
+
+  .stat-box {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 8px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .nav {
+    flex: 1;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--muted);
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    background: none;
+    text-align: left;
+    width: 100%;
+    font-family: var(--font-mono);
+  }
+
+  .nav-item:hover { color: var(--text); background: var(--bg3); }
+
+  .nav-item.active {
+    color: var(--accent);
+    background: rgba(200, 240, 77, 0.08);
+    border-color: rgba(200, 240, 77, 0.2);
+  }
+
+  .nav-icon { font-size: 14px; width: 18px; text-align: center; }
+
+  .sidebar-bottom {
+    padding: 12px 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .topbar {
+    height: 52px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+    color: #F0EDE4;
+    letter-spacing: -0.02em;
+    flex: 1;
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── NEW REPORT SCREEN ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  input, textarea, select {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 10px 12px;
+    transition: border-color 0.15s;
+    outline: none;
+    width: 100%;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: rgba(200, 240, 77, 0.4);
+  }
+
+  textarea { resize: vertical; min-height: 80px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #080808;
+  }
+
+  .btn-primary:hover { background: #d4f55a; }
+  .btn-primary:disabled { background: #2a2a2a; color: #444; cursor: not-allowed; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { color: var(--text); border-color: #333; }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(240, 77, 122, 0.3);
+  }
+
+  /* ── PIPELINE PROGRESS ── */
+  .pipeline-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(8,8,8,0.95);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .pipeline-overlay.visible { display: flex; }
+
+  .pipeline-card {
+    width: 100%;
+    max-width: 700px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .pipeline-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pipeline-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+    color: #F0EDE4;
+  }
+
+  .agents-track {
+    display: flex;
+    padding: 20px 24px;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .agent-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+  }
+
+  .agent-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 60%;
+    width: 80%;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .agent-step.done::after { background: var(--accent); }
+  .agent-step.running::after { background: var(--border); }
+
+  .agent-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.3s;
+    z-index: 1;
+  }
+
+  .agent-step.done .agent-dot {
+    background: rgba(200, 240, 77, 0.15);
+    border-color: var(--accent);
+  }
+
+  .agent-step.running .agent-dot {
+    background: rgba(200, 240, 77, 0.08);
+    border-color: var(--accent);
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(200,240,77,0.3); }
+    50% { box-shadow: 0 0 0 6px rgba(200,240,77,0); }
+  }
+
+  .agent-label {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .agent-step.done .agent-label,
+  .agent-step.running .agent-label { color: var(--accent); }
+
+  .log-box {
+    height: 240px;
+    overflow-y: auto;
+    padding: 16px 24px;
+    font-size: 11px;
+    line-height: 1.8;
+    color: #666;
+    background: var(--bg);
+  }
+
+  .log-line { margin-bottom: 2px; }
+  .log-line.highlight { color: var(--accent); }
+  .log-line.error { color: var(--danger); }
+  .log-line.success { color: var(--accent2); }
+
+  .pipeline-footer {
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .progress-bar-wrap {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-right: 16px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  /* ── REPORTS LIST ── */
+  .reports-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .report-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    transition: border-color 0.15s;
+  }
+
+  .report-row:hover { border-color: #333; }
+
+  .report-icon { font-size: 20px; flex-shrink: 0; }
+
+  .report-info { flex: 1; min-width: 0; }
+
+  .report-name {
+    font-size: 12px;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .report-meta { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+  .report-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+  /* ── SETTINGS ── */
+  .settings-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .settings-title {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .key-display {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* ── ALERTS ── */
+  .alert {
+    padding: 12px 16px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .alert.visible { display: block; }
+  .alert-success { background: rgba(77,240,200,0.1); border: 1px solid rgba(77,240,200,0.3); color: var(--accent2); }
+  .alert-error { background: rgba(240,77,122,0.1); border: 1px solid rgba(240,77,122,0.3); color: var(--danger); }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 36px; margin-bottom: 12px; }
+  .empty-title { font-family: var(--font-display); font-size: 16px; color: #333; margin-bottom: 6px; }
+  .empty-sub { font-size: 11px; }
+
+  /* ── REPORT PREVIEW ── */
+  .report-preview {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+    font-size: 12px;
+    line-height: 1.8;
+    color: #AAA;
+    white-space: pre-wrap;
+    max-height: 500px;
+    overflow-y: auto;
+    display: none;
+  }
+
+  .report-preview.visible { display: block; }
+
+  /* ── FEEDBACK PANEL ── */
+  .feedback-panel {
+    background: var(--bg2);
+    border: 1px solid rgba(200, 240, 77, 0.2);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-top: 16px;
+    display: none;
+  }
+
+  .feedback-panel.visible { display: block; }
+
+  .tip {
+    background: var(--bg3);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    font-size: 11px;
+    color: #888;
+    line-height: 1.7;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 16px;
+  }
+
+  .tip strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand">Quintara<br>Reports</div>
+    <div class="tagline">Competitor Analysis</div>
+  </div>
+
+  <div class="sidebar-stats">
+    <div class="stat-box">
+      <div class="stat-num" id="stat-jobs">0</div>
+      <div class="stat-label">Reports</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="stat-revenue">€0</div>
+      <div class="stat-label">Revenue</div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <button class="nav-item active" data-screen="new-report">
+      <span class="nav-icon">✦</span> New Report
+    </button>
+    <button class="nav-item" data-screen="reports">
+      <span class="nav-icon">📁</span> Past Reports
+    </button>
+    <button class="nav-item" data-screen="feedback">
+      <span class="nav-icon">🧠</span> Client Feedback
+    </button>
+    <button class="nav-item" data-screen="settings">
+      <span class="nav-icon">⚙</span> Settings
+    </button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <button class="btn btn-ghost" style="width:100%; justify-content:center;" onclick="window.api.openFolder()">
+      📂 Open Outputs Folder
+    </button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="page-title" id="page-title">New Report</div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── NEW REPORT SCREEN ── -->
+    <div class="screen active" id="screen-new-report">
+      <div class="tip">
+        <strong>How to use:</strong> Copy the client details from your Gmail (Tally submission) and paste them into the big box at the bottom — or fill in the fields manually. Then click <strong>Generate Report</strong>.
+      </div>
+
+      <div id="alert-run" class="alert"></div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Client Full Name *</label>
+          <input type="text" id="f-name" placeholder="e.g. Thomas Bergmann">
+        </div>
+        <div class="form-group">
+          <label>Company Name *</label>
+          <input type="text" id="f-company" placeholder="e.g. KlarBlick GmbH">
+        </div>
+        <div class="form-group">
+          <label>Industry *</label>
+          <input type="text" id="f-industry" placeholder="e.g. Building cleaning / SaaS / Retail">
+        </div>
+        <div class="form-group">
+          <label>What does their company do?</label>
+          <input type="text" id="f-product" placeholder="One sentence description">
+        </div>
+        <div class="form-group">
+          <label>Competitor 1 *</label>
+          <input type="text" id="f-c1" placeholder="Competitor name">
+        </div>
+        <div class="form-group">
+          <label>Competitor 2 *</label>
+          <input type="text" id="f-c2" placeholder="Competitor name">
+        </div>
+        <div class="form-group">
+          <label>Competitor 3</label>
+          <input type="text" id="f-c3" placeholder="Competitor name (optional)">
+        </div>
+        <div class="form-group">
+          <label>Geographic Market *</label>
+          <input type="text" id="f-market" placeholder="e.g. Austria, Vienna + Lower Austria">
+        </div>
+        <div class="form-group full">
+          <label>What decision are they trying to make?</label>
+          <textarea id="f-decision" placeholder="e.g. Reviewing pricing strategy for 2025, want to understand market gaps..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Client Email</label>
+          <input type="email" id="f-email" placeholder="client@company.com">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 16px;">
+        <label>— OR — Paste raw Tally email here (the whole thing)</label>
+        <textarea id="f-raw" style="min-height:100px; font-size:11px; color:#666;" placeholder="Paste the full Tally notification email here. The app will read it automatically and fill in the fields above..."></textarea>
+      </div>
+
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button class="btn btn-primary" id="btn-parse" onclick="parseRaw()">⟳ Read from Email</button>
+        <button class="btn btn-primary" id="btn-run" onclick="runPipeline()" style="background: var(--accent); flex:1; justify-content:center; font-size:13px; padding: 13px 20px;">
+          ▶ Generate Report
+        </button>
+        <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+      </div>
+    </div>
+
+    <!-- ── REPORTS SCREEN ── -->
+    <div class="screen" id="screen-reports">
+      <div id="reports-list" class="reports-list">
+        <div class="empty">
+          <div class="empty-icon">📄</div>
+          <div class="empty-title">No reports yet</div>
+          <div class="empty-sub">Run your first report to see it here.</div>
+        </div>
+      </div>
+      <div id="report-preview" class="report-preview"></div>
+    </div>
+
+    <!-- ── FEEDBACK SCREEN ── -->
+    <div class="screen" id="screen-feedback">
+      <div class="tip">
+        <strong>Memory system:</strong> After you deliver a report and the client replies with feedback, paste it here. The pipeline learns from it and applies the lessons to future reports in the same industry — automatically.
+      </div>
+
+      <div id="alert-feedback" class="alert"></div>
+
+      <div class="settings-section">
+        <div class="settings-title">Log Client Feedback</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Industry / Niche</label>
+            <input type="text" id="fb-industry" placeholder="e.g. SaaS, Fintech, Building cleaning">
+          </div>
+          <div class="form-group">
+            <label>Client Name (optional)</label>
+            <input type="text" id="fb-client" placeholder="For your reference only">
+          </div>
+          <div class="form-group full">
+            <label>What did the client say? What did they want more/less of?</label>
+            <textarea id="fb-text" style="min-height:100px;" placeholder="e.g. Client wanted more focus on pricing comparison, less on company history. Preferred bullet points over prose. Asked for a regulatory section next time."></textarea>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveFeedback()">💾 Save to Memory</button>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS SCREEN ── -->
+    <div class="screen" id="screen-settings">
+      <div id="alert-settings" class="alert"></div>
+
+      <div class="settings-section">
+        <div class="settings-title">Anthropic API Key</div>
+        <div class="tip" style="margin-bottom:14px;">
+          Get your key at <strong>console.anthropic.com</strong> → API Keys → Create Key. Add €10 credit under Billing. Each report costs approximately <strong>€0.10–0.30</strong>.
+        </div>
+        <div class="key-display">
+          <input type="password" id="api-key-input" placeholder="sk-ant-..." style="flex:1;">
+          <button class="btn btn-ghost" onclick="toggleKeyVisibility()">👁</button>
+          <button class="btn btn-primary" onclick="saveApiKey()">Save Key</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">About Quintara Reports</div>
+        <div style="font-size:12px; color: var(--muted); line-height:1.8;">
+          <div>Version: 1.0.0</div>
+          <div>Pipeline: 5 agents — Intake → Research → Analyst → Writer → QA</div>
+          <div>Model: Claude Opus</div>
+          <div>Output format: Markdown (.md) — paste into Google Docs</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PIPELINE OVERLAY -->
+<div class="pipeline-overlay" id="pipeline-overlay">
+  <div class="pipeline-card">
+    <div class="pipeline-header">
+      <div class="pipeline-title">Generating Report...</div>
+      <div id="pipeline-status" style="font-size:11px; color: var(--muted);">Starting</div>
+    </div>
+
+    <div class="agents-track">
+      <div class="agent-step" id="step-intake">
+        <div class="agent-dot">📋</div>
+        <div class="agent-label">Intake</div>
+      </div>
+      <div class="agent-step" id="step-research">
+        <div class="agent-dot">🔍</div>
+        <div class="agent-label">Research</div>
+      </div>
+      <div class="agent-step" id="step-analyst">
+        <div class="agent-dot">📊</div>
+        <div class="agent-label">Analyst</div>
+      </div>
+      <div class="agent-step" id="step-writer">
+        <div class="agent-dot">✍️</div>
+        <div class="agent-label">Writer</div>
+      </div>
+      <div class="agent-step" id="step-qa">
+        <div class="agent-dot">✅</div>
+        <div class="agent-label">QA</div>
+      </div>
+    </div>
+
+    <div class="log-box" id="log-box"></div>
+
+    <div class="pipeline-footer">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div id="pipeline-eta" style="font-size:10px; color: var(--muted); white-space:nowrap;">~20 min</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── NAVIGATION ───────────────────────────────────────────────────────────────
+
+const titles = {
+  "new-report": "New Report",
+  "reports": "Past Reports",
+  "feedback": "Client Feedback",
+  "settings": "Settings",
+};
+
+document.querySelectorAll(".nav-item").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const screen = btn.dataset.screen;
+    document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("screen-" + screen).classList.add("active");
+    document.getElementById("page-title").textContent = titles[screen];
+    if (screen === "reports") loadReports();
+  });
+});
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+
+async function init() {
+  const stats = await window.api.getStats();
+  document.getElementById("stat-jobs").textContent = stats.jobCount;
+  document.getElementById("stat-revenue").textContent = "€" + (stats.jobCount * 249).toLocaleString();
+  const key = await window.api.loadApiKey();
+  if (key) document.getElementById("api-key-input").value = key;
+}
+
+init();
+
+// ── PARSE RAW EMAIL ───────────────────────────────────────────────────────────
+
+function parseRaw() {
+  const raw = document.getElementById("f-raw").value.trim();
+  if (!raw) return;
+
+  const get = (patterns) => {
+    for (const p of patterns) {
+      const m = raw.match(p);
+      if (m && m[1]) return m[1].trim();
+    }
+    return "";
+  };
+
+  document.getElementById("f-name").value = get([/Your full name[\s\S]*?\n([^\n]+)/, /full name[:\s]+([^\n]+)/i, /name[:\s]+([^\n]+)/i]);
+  document.getElementById("f-company").value = get([/Your company name[\s\S]*?\n([^\n]+)/, /company name[:\s]+([^\n]+)/i, /company[:\s]+([^\n]+)/i]);
+  document.getElementById("f-industry").value = get([/Your industry[\s\S]*?\n([^\n]+)/, /industry[:\s]+([^\n]+)/i]);
+  document.getElementById("f-product").value = get([/What does your company do[\s\S]*?\n([^\n]+)/, /does[:\s]+([^\n]+)/i]);
+  document.getElementById("f-c1").value = get([/Competitor 1[\s\S]*?\n([^\n]+)/, /competitor 1[:\s]+([^\n]+)/i]);
+  document.getElementById("f-c2").value = get([/Competitor 2[\s\S]*?\n([^\n]+)/, /competitor 2[:\s]+([^\n]+)/i]);
+  document.getElementById("f-c3").value = get([/Competitor 3[\s\S]*?\n([^\n]+)/, /competitor 3[:\s]+([^\n]+)/i]);
+  document.getElementById("f-market").value = get([/countries or regions[\s\S]*?\n([^\n]+)/, /market[:\s]+([^\n]+)/i, /region[:\s]+([^\n]+)/i]);
+  document.getElementById("f-decision").value = get([/decision are you trying[\s\S]*?\n([^\n]+(?:\n(?!\n)[^\n]+)*)/, /decision[:\s]+([^\n]+)/i]);
+  document.getElementById("f-email").value = get([/email address[\s\S]*?\n([^\n@]+@[^\n]+)/, /email[:\s]+([^\n@]+@[^\n]+)/i]);
+}
+
+// ── CLEAR FORM ────────────────────────────────────────────────────────────────
+
+function clearForm() {
+  ["f-name","f-company","f-industry","f-product","f-c1","f-c2","f-c3","f-market","f-decision","f-email","f-raw"]
+    .forEach(id => document.getElementById(id).value = "");
+}
+
+// ── RUN PIPELINE ──────────────────────────────────────────────────────────────
+
+let pipelineRunning = false;
+
+async function runPipeline() {
+  if (pipelineRunning) return;
+
+  const name = document.getElementById("f-name").value.trim();
+  const company = document.getElementById("f-company").value.trim();
+  const industry = document.getElementById("f-industry").value.trim();
+  const c1 = document.getElementById("f-c1").value.trim();
+  const c2 = document.getElementById("f-c2").value.trim();
+  const market = document.getElementById("f-market").value.trim();
+
+  if (!company || !industry || !c1 || !c2 || !market) {
+    showAlert("alert-run", "error", "Please fill in: Company Name, Industry, at least 2 Competitors, and Market.");
+    return;
+  }
+
+  // Build client details string for pipeline
+  const details = [
+    `Client name: ${name || "Not provided"}`,
+    `Company: ${company}`,
+    `What they do: ${document.getElementById("f-product").value || "Not specified"}`,
+    `Industry: ${industry}`,
+    `Competitor 1: ${c1}`,
+    `Competitor 2: ${c2}`,
+    document.getElementById("f-c3").value ? `Competitor 3: ${document.getElementById("f-c3").value}` : "",
+    `Market: ${market}`,
+    `Decision: ${document.getElementById("f-decision").value || "General competitive overview"}`,
+    `Email: ${document.getElementById("f-email").value || "Not provided"}`,
+  ].filter(Boolean).join("\n");
+
+  // Show overlay
+  showPipelineOverlay();
+  pipelineRunning = true;
+
+  // Listen for logs
+  window.api.removePipelineLog();
+  window.api.onPipelineLog((msg) => {
+    appendLog(msg);
+    updateAgentSteps(msg);
+    updateProgress(msg);
+  });
+
+  const result = await window.api.runPipeline(details);
+  pipelineRunning = false;
+
+  if (result.ok) {
+    setProgress(100);
+    appendLog("\n✅ Report complete! Outputs folder has been opened.", "success");
+    document.getElementById("pipeline-status").textContent = "Done ✓";
+    document.getElementById("pipeline-eta").textContent = "Complete";
+    markAllDone();
+    // Refresh stats
+    setTimeout(async () => {
+      const stats = await window.api.getStats();
+      document.getElementById("stat-jobs").textContent = stats.jobCount;
+      document.getElementById("stat-revenue").textContent = "€" + (stats.jobCount * 249).toLocaleString();
+    }, 1000);
+    setTimeout(hidePipelineOverlay, 3000);
+    clearForm();
+  } else {
+    appendLog("\n❌ " + result.error, "error");
+    document.getElementById("pipeline-status").textContent = "Error";
+    document.getElementById("pipeline-eta").textContent = "";
+  }
+}
+
+// ── PIPELINE OVERLAY ──────────────────────────────────────────────────────────
+
+function showPipelineOverlay() {
+  document.getElementById("pipeline-overlay").classList.add("visible");
+  document.getElementById("log-box").innerHTML = "";
+  document.getElementById("progress-bar").style.width = "0%";
+  document.getElementById("pipeline-status").textContent = "Starting...";
+  document.getElementById("pipeline-eta").textContent = "~20 min";
+  ["intake","research","analyst","writer","qa"].forEach(s => {
+    const el = document.getElementById("step-" + s);
+    el.classList.remove("done","running");
+  });
+  appendLog("Starting Quintara pipeline...\n");
+}
+
+function hidePipelineOverlay() {
+  document.getElementById("pipeline-overlay").classList.remove("visible");
+}
+
+function appendLog(msg, type = "") {
+  const box = document.getElementById("log-box");
+  const line = document.createElement("div");
+  line.className = "log-line" + (type ? " " + type : "");
+  line.textContent = msg;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+}
+
+const agentMap = {
+  "INTAKE AGENT": "intake",
+  "RESEARCH AGENT": "research",
+  "ANALYST AGENT": "analyst",
+  "WRITER AGENT": "writer",
+  "QA AGENT": "qa",
+};
+
+const progressMap = {
+  "INTAKE AGENT": 10,
+  "RESEARCH AGENT": 30,
+  "ANALYST AGENT": 55,
+  "WRITER AGENT": 80,
+  "QA AGENT": 95,
+};
+
+let currentAgent = null;
+
+function updateAgentSteps(msg) {
+  for (const [key, id] of Object.entries(agentMap)) {
+    if (msg.includes(key)) {
+      if (currentAgent && currentAgent !== id) {
+        document.getElementById("step-" + currentAgent).classList.remove("running");
+        document.getElementById("step-" + currentAgent).classList.add("done");
+      }
+      document.getElementById("step-" + id).classList.add("running");
+      document.getElementById("pipeline-status").textContent = key.replace(" AGENT", "").charAt(0) + key.replace(" AGENT", "").slice(1).toLowerCase() + "...";
+      currentAgent = id;
+    }
+  }
+  if (msg.includes("✅") && currentAgent) {
+    // Mark current as done on next step trigger
+  }
+}
+
+function updateProgress(msg) {
+  for (const [key, pct] of Object.entries(progressMap)) {
+    if (msg.includes(key)) setProgress(pct);
+  }
+}
+
+function setProgress(pct) {
+  document.getElementById("progress-bar").style.width = pct + "%";
+}
+
+function markAllDone() {
+  ["intake","research","analyst","writer","qa"].forEach(s => {
+    const el = document.getElementById("step-" + s);
+    el.classList.remove("running");
+    el.classList.add("done");
+  });
+}
+
+// ── REPORTS LIST ──────────────────────────────────────────────────────────────
+
+async function loadReports() {
+  const reports = await window.api.getReports();
+  const container = document.getElementById("reports-list");
+  document.getElementById("report-preview").classList.remove("visible");
+
+  if (!reports.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">📄</div><div class="empty-title">No reports yet</div><div class="empty-sub">Run your first report to see it here.</div></div>`;
+    return;
+  }
+
+  container.innerHTML = reports.map(r => `
+    <div class="report-row">
+      <div class="report-icon">📄</div>
+      <div class="report-info">
+        <div class="report-name">${r.name.replace(".md","").replace(/-/g," ")}</div>
+        <div class="report-meta">${r.date} · ${r.size}</div>
+      </div>
+      <div class="report-actions">
+        <button class="btn btn-ghost" onclick="previewReport('${r.name}')">Preview</button>
+        <button class="btn btn-primary" onclick="window.api.openReport('${r.name}')">Open</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function previewReport(filename) {
+  const content = await window.api.readReport(filename);
+  const preview = document.getElementById("report-preview");
+  // Strip HTML comments (QA header)
+  const clean = content.replace(/<!--[\s\S]*?-->/g, "").trim();
+  preview.textContent = clean;
+  preview.classList.add("visible");
+  preview.scrollIntoView({ behavior: "smooth" });
+}
+
+// ── FEEDBACK ─────────────────────────────────────────────────────────────────
+
+async function saveFeedback() {
+  const industry = document.getElementById("fb-industry").value.trim();
+  const feedback = document.getElementById("fb-text").value.trim();
+  if (!industry || !feedback) {
+    showAlert("alert-feedback", "error", "Please fill in both Industry and Feedback fields.");
+    return;
+  }
+  const result = await window.api.saveFeedback({ industry, feedback });
+  if (result.ok) {
+    showAlert("alert-feedback", "success", "Feedback saved to memory. The pipeline will apply it to future " + industry + " reports.");
+    document.getElementById("fb-text").value = "";
+    document.getElementById("fb-industry").value = "";
+    document.getElementById("fb-client").value = "";
+  } else {
+    showAlert("alert-feedback", "error", "Failed to save: " + result.error);
+  }
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────────────────────
+
+async function saveApiKey() {
+  const key = document.getElementById("api-key-input").value.trim();
+  if (!key.startsWith("sk-ant-")) {
+    showAlert("alert-settings", "error", "That doesn't look right. The key should start with sk-ant-");
+    return;
+  }
+  const result = await window.api.saveApiKey(key);
+  if (result.ok) {
+    showAlert("alert-settings", "success", "API key saved. You're ready to generate reports.");
+  } else {
+    showAlert("alert-settings", "error", "Failed to save key: " + result.error);
+  }
+}
+
+function toggleKeyVisibility() {
+  const input = document.getElementById("api-key-input");
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+
+function showAlert(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = "alert alert-" + type + " visible";
+  el.textContent = msg;
+  setTimeout(() => el.classList.remove("visible"), 6000);
+}
+</script>
+</body>
+</html>

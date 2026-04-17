@@ -1,0 +1,17 @@
+{
+  "name": "quintara-reports",
+  "version": "1.0.0",
+  "description": "Quintara Reports — Competitor Analysis Desktop App",
+  "main": "main.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "electron .",
+    "install-all": "npm install"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  },
+  "devDependencies": {
+    "electron": "^29.0.0"
+  }
+}
